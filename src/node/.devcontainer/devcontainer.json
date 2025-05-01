@@ -1,0 +1,13 @@
+{
+  "image": "docker.io/jmcombs/devcontainer/base-ubuntu:latest",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/jmcombs/devcontainer-features/ngrok:1": {}
+  },
+  "postCreateCommand": ". ${NVM_DIR}/nvm.sh && nvm install --lts",
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint", "EditorConfig.EditorConfig"]
+    }
+  }
+}

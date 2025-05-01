@@ -1,0 +1,17 @@
+{
+  "image": "docker.io/jmcombs/devcontainer/base-ubuntu:latest",
+  "features": {
+    "ghcr.io/devcontainers/features/python:1": {},
+    "ghcr.io/jmcombs/devcontainer-features/ngrok:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "ms-python.autopep8",
+        "EditorConfig.EditorConfig"
+      ]
+    }
+  }
+}
