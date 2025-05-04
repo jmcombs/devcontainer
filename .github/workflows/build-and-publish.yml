@@ -34,7 +34,12 @@ jobs:
         with:
           images: ${{ github.repository }}
           tags: |
+            # Only apply 'latest' to base-ubuntu
             type=raw,value=latest
+            # Generate folder-specific tags
+            type=raw,value=base-ubuntu
+            type=raw,value=node
+            type=raw,value=python
           labels: |
             org.opencontainers.image.created=$GITHUB_RUN_DATE
             org.opencontainers.image.authors=${{ env.AUTHOR }}
@@ -47,23 +52,24 @@ jobs:
       - name: Build and publish base-ubuntu container
         run: |
           cd src/base-ubuntu
-          devcontainer build --workspace-folder . --image-name ${{ github.repository }}/base-ubuntu:latest --platform linux/arm64,linux/amd64 \
+          devcontainer build --workspace-folder . --image-name ${{ github.repository }} --platform linux/arm64,linux/amd64 \
           --output type=registry \
           --label ${{ steps.meta.outputs.labels }} \
-          --tag ${{ steps.meta.outputs.tags }}
+          --tag "${{ github.repository }}:base-ubuntu" \
+          --tag "${{ github.repository }}:latest"
 
       - name: Build and publish node container
         run: |
           cd src/node
-          devcontainer build --workspace-folder . --image-name ${{ github.repository }}/node:latest --platform linux/arm64,linux/amd64 \
+          devcontainer build --workspace-folder . --image-name ${{ github.repository }} --platform linux/arm64,linux/amd64 \
           --output type=registry \
           --label ${{ steps.meta.outputs.labels }} \
-          --tag ${{ steps.meta.outputs.tags }}
+          --tag "${{ github.repository }}:node"
 
       - name: Build and publish python container
         run: |
           cd src/python
-          devcontainer build --workspace-folder . --image-name ${{ github.repository }}/python:latest --platform linux/arm64,linux/amd64 \
+          devcontainer build --workspace-folder . --image-name ${{ github.repository }} --platform linux/arm64,linux/amd64 \
           --output type=registry \
           --label ${{ steps.meta.outputs.labels }} \
-          --tag ${{ steps.meta.outputs.tags }}
+          --tag "${{ github.repository }}:python"

@@ -1,5 +1,5 @@
 {
-  "image": "docker.io/jmcombs/devcontainer/base-ubuntu:latest",
+  "image": "docker.io/jmcombs/devcontainer:base-ubuntu",
   "features": {
     "ghcr.io/devcontainers/features/node:1": {},
     "ghcr.io/jmcombs/devcontainer-features/ngrok:1": {}
