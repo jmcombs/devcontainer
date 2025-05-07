@@ -54,12 +54,21 @@ jobs:
       - name: Install Devcontainer CLI
         run: npm install -g @devcontainers/cli
 
-      - name: Debug GITHUB_TOKEN permissions for user namespace
+      - name: Debug GITHUB_TOKEN permissions for user and repository
         run: |
-          echo "Testing token permissions for user namespace..."
-          curl -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-               -H "Accept: application/vnd.github.v3+json" \
-               https://api.github.com/user/packages?package_type=container
+          echo "Testing GITHUB_TOKEN permissions for user namespace..."
+          curl -s -w "\nHTTP_STATUS: %{http_code}\n" \
+               -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+               -H "Accept: application/vnd.github+json" \
+               "https://api.github.com/user/packages?package_type=container" > user_packages.json
+          cat user_packages.json
+
+          echo "Testing GITHUB_TOKEN permissions for repository packages..."
+          curl -s -w "\nHTTP_STATUS: %{http_code}\n" \
+               -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+               -H "Accept: application/vnd.github+json" \
+               "https://api.github.com/repos/${{ github.repository }}/packages?package_type=container" > repo_packages.json
+          cat repo_packages.json
 
       - name: Build and publish base-ubuntu container
         run: |
