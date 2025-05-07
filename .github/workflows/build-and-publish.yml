@@ -8,12 +8,20 @@ on:
     branches:
       - main
 
+# Global workflow permissions
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    # Job-specific permissions that override workflow-level permissions
     permissions:
-      contents: read
-      packages: write
+      contents: read # Required to check out the repository
+      packages: write # Required to push packages to GHCR
+      id-token: write # Required for token-based authentication
+      actions: read # Required to read GitHub Actions metadata
 
     steps:
       - name: Checkout repository
@@ -29,7 +37,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata
@@ -40,7 +48,7 @@ jobs:
           tags: |
             type=raw,value=latest
           labels: |
-            org.opencontainers.image.authors=${{ github.actor }}
+            org.opencontainers.image.authors=${{ github.repository_owner }}
 
       - name: Process metadata
         run: |
