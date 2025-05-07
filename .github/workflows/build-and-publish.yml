@@ -57,7 +57,7 @@ jobs:
         run: |
           cd src/base-ubuntu
           devcontainer build --workspace-folder . \
-            --image-name ghcr.io/${{ github.repository }}/base-ubuntu:latest \
+            --image-name ghcr.io/${{ github.repository }}:base-ubuntu \
             --platform linux/arm64,linux/amd64 \
             --output type=registry \
             ${{ env.LABEL_ARGS }}
@@ -66,7 +66,7 @@ jobs:
         run: |
           cd src/node
           devcontainer build --workspace-folder . \
-            --image-name ghcr.io/${{ github.repository }}/node:latest \
+            --image-name ghcr.io/${{ github.repository }}:node \
             --platform linux/arm64,linux/amd64 \
             --output type=registry \
             ${{ env.LABEL_ARGS }}
@@ -75,7 +75,7 @@ jobs:
         run: |
           cd src/python
           devcontainer build --workspace-folder . \
-            --image-name ghcr.io/${{ github.repository }}/python:latest \
+            --image-name ghcr.io/${{ github.repository }}:python \
             --platform linux/arm64,linux/amd64 \
             --output type=registry \
             ${{ env.LABEL_ARGS }}
