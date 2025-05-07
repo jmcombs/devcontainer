@@ -8,13 +8,18 @@ on:
     branches:
       - main
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
-    # Job-specific permissions that override workflow-level permissions
     permissions:
-      contents: read # Required to check out the repository
-      packages: write # Required to push packages to GHCR
+      contents: read
+      packages: write
+      attestations: write
+      id-token: write
 
     steps:
       - name: Checkout repository
@@ -29,19 +34,19 @@ jobs:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest
           labels: |
-            org.opencontainers.image.authors=${{ github.repository_owner }}
+            org.opencontainers.image.authors=${{ github.actor }}
 
       - name: Process metadata
         run: |
@@ -54,27 +59,11 @@ jobs:
       - name: Install Devcontainer CLI
         run: npm install -g @devcontainers/cli
 
-      - name: Debug GITHUB_TOKEN permissions
-        run: |
-          echo "Checking GITHUB_TOKEN authentication..."
-          curl -s -w "\nHTTP_STATUS: %{http_code}\n" \
-               -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-               -H "Accept: application/vnd.github+json" \
-               "https://api.github.com/user" > user_info.json
-          cat user_info.json
-
-          echo "Testing repository packages..."
-          curl -s -w "\nHTTP_STATUS: %{http_code}\n" \
-               -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-               -H "Accept: application/vnd.github+json" \
-               "https://api.github.com/repos/${{ github.repository }}/packages?package_type=container" > repo_packages.json
-          cat repo_packages.json
-
       - name: Build and publish base-ubuntu container
         run: |
           cd src/base-ubuntu
           devcontainer build --workspace-folder . \
-            --image-name ghcr.io/${{ github.repository }}:base-ubuntu \
+            --image-name ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:base-ubuntu \
             --platform linux/arm64,linux/amd64 \
             --output type=registry \
             ${{ env.LABEL_ARGS }}
@@ -83,7 +72,7 @@ jobs:
         run: |
           cd src/node
           devcontainer build --workspace-folder . \
-            --image-name ghcr.io/${{ github.repository }}:node \
+            --image-name ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:node \
             --platform linux/arm64,linux/amd64 \
             --output type=registry \
             ${{ env.LABEL_ARGS }}
@@ -92,7 +81,7 @@ jobs:
         run: |
           cd src/python
           devcontainer build --workspace-folder . \
-            --image-name ghcr.io/${{ github.repository }}:python \
+            --image-name ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:python \
             --platform linux/arm64,linux/amd64 \
             --output type=registry \
             ${{ env.LABEL_ARGS }}
