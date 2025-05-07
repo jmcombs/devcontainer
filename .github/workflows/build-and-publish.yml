@@ -11,6 +11,9 @@ on:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - name: Checkout repository
@@ -25,6 +28,7 @@ jobs:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
+          registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
@@ -38,26 +42,40 @@ jobs:
           labels: |
             org.opencontainers.image.authors=${{ github.actor }}
 
+      - name: Process metadata
+        run: |
+          # Convert newline-separated labels to multiple --label arguments
+          LABEL_ARGS=$(echo "${{ steps.meta.outputs.labels }}" | while IFS= read -r line; do
+            [ -n "$line" ] && echo -n "--label \"$line\" "
+          done)
+          echo "LABEL_ARGS=$LABEL_ARGS" >> $GITHUB_ENV
+
       - name: Install Devcontainer CLI
         run: npm install -g @devcontainers/cli
 
       - name: Build and publish base-ubuntu container
         run: |
           cd src/base-ubuntu
-          devcontainer build --workspace-folder . --image-name ghcr.io/${{ github.repository }}/base-ubuntu:latest --platform linux/arm64,linux/amd64 \
-          --output type=registry \
-          --label ${{ steps.meta.outputs.labels }}
+          devcontainer build --workspace-folder . \
+            --image-name ghcr.io/${{ github.repository }}/base-ubuntu:latest \
+            --platform linux/arm64,linux/amd64 \
+            --output type=registry \
+            ${{ env.LABEL_ARGS }}
 
       - name: Build and publish node container
         run: |
           cd src/node
-          devcontainer build --workspace-folder . --image-name ghcr.io/${{ github.repository }}/node:latest --platform linux/arm64,linux/amd64 \
-          --output type=registry \
-          --label ${{ steps.meta.outputs.labels }}
+          devcontainer build --workspace-folder . \
+            --image-name ghcr.io/${{ github.repository }}/node:latest \
+            --platform linux/arm64,linux/amd64 \
+            --output type=registry \
+            ${{ env.LABEL_ARGS }}
 
       - name: Build and publish python container
         run: |
           cd src/python
-          devcontainer build --workspace-folder . --image-name ghcr.io/${{ github.repository }}/python:latest --platform linux/arm64,linux/amd64 \
-          --output type=registry \
-          --label ${{ steps.meta.outputs.labels }}
+          devcontainer build --workspace-folder . \
+            --image-name ghcr.io/${{ github.repository }}/python:latest \
+            --platform linux/arm64,linux/amd64 \
+            --output type=registry \
+            ${{ env.LABEL_ARGS }}
