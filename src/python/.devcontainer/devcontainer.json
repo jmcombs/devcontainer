@@ -7,10 +7,32 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-python.python",
+        "ms-toolsai.jupyter-keymap",
+        "ms-toolsai.vscode-jupyter-cell-tags",
+        "ms-toolsai.vscode-jupyter-slideshow",
+        "njpwerner.autodocstring",
+        "ms-vscode.remote-server",
+        "ryu1kn.text-marker",
+        "ms-vscode-remote.remote-ssh-edit",
+        "github.github-vscode-theme",
+        "donjayamanne.python-environment-manager",
+        "ms-toolsai.jupyter-renderers",
+        "tamasfe.even-better-toml",
+        "ms-toolsai.jupyter",
+        "charliermarsh.ruff",
+        "postman.postman-for-vscode",
+        "ms-toolsai.jupyter",
+        "redhat.vscode-yaml",
+        "ms-azuretools.vscode-docker",
+        "emmanuelbeziat.vscode-great-icons",
+        "ms-vscode-remote.remote-containers",
+        "ms-vscode-remote.remote-ssh",
+        "github.copilot-chat",
+        "github.copilot",
+        "ms-vscode.remote-explorer",
         "ms-python.vscode-pylance",
-        "ms-python.autopep8",
-        "EditorConfig.EditorConfig"
+        "ms-python.debugpy",
+        "ms-python.python"
       ]
     }
   }
